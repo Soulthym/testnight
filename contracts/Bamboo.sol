@@ -69,11 +69,11 @@ contract Bamboo is ERC20Burnable, Ownable {
     if(sender == lpPool) {
       uint256 devAmount = amount.mul(feeBuy).div(PERCENT);
       amount = amount.sub(devAmount);
-      ERC20._transfer(sender, recipient, devAmount);
+      ERC20._transfer(sender, devWallet, devAmount);
     } else if (recipient == lpPool) {
       uint256 devAmount = amount.mul(feeSell).div(PERCENT);
       amount = amount.sub(devAmount);
-      ERC20._transfer(sender, recipient, devAmount);
+      ERC20._transfer(sender, devWallet, devAmount);
     }
     ERC20._transfer(sender, recipient, amount);
   }
