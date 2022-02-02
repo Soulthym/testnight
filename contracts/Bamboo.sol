@@ -22,19 +22,19 @@ contract Bamboo is ERC20Burnable, Ownable {
   address public pool;
   address public devWallet;
 
-  event Deployed(address sender, address pool, string symbol, string name);
+  event Deployed(address sender, string symbol, string name);
   event SetBuyFee(address sender, uint256 fee);
   event SetSellFee(address sender, uint256 fee);
   event SetDevWallet(address sender, address devWallet);
+  event SetPool(address sender, address pool);
 
-  constructor(address _pool) 
+  constructor() 
     ERC20(SYMBOL, NAME) 
   {
-    require(_pool != NULL_ADDRESS, "Bamboo::constructor: null pool address");
     _mint(_msgSender(), INITIAL_SUPPLY);
     setBuyFeePercent(INITIAL_FEE);
     setSellFeePercent(INITIAL_FEE);
-    emit Deployed(_msgSender(), _pool, SYMBOL, NAME);
+    emit Deployed(_msgSender(), SYMBOL, NAME);
   }
 
   function decimals() public view virtual override returns (uint8) {
@@ -58,6 +58,11 @@ contract Bamboo is ERC20Burnable, Ownable {
     emit SetDevWallet(_msgSender(), _devWallet);
   }
 
+  function setPool(address _pool) external onlyOwner {
+    pool = _pool;
+    emit SetPool(_msgSender(), _pool);
+  }
+
   // TODO
 
   function _transfer(
@@ -66,14 +71,17 @@ contract Bamboo is ERC20Burnable, Ownable {
       uint256 amount
   ) internal override virtual {
     address lpPool = pool;
+    address feeWallet = devWallet;
+    require(lpPool != NULL_ADDRESS, "Bamboo::_transfer: pool unitialized");
+    require(feeWallet != NULL_ADDRESS, "Bamboo::_transfer: devWallet unitialized");
     if(sender == lpPool) {
       uint256 devAmount = amount.mul(feeBuy).div(PERCENT);
       amount = amount.sub(devAmount);
-      ERC20._transfer(sender, devWallet, devAmount);
+      if(devAmount > 0) ERC20._transfer(sender, feeWallet, devAmount);
     } else if (recipient == lpPool) {
       uint256 devAmount = amount.mul(feeSell).div(PERCENT);
       amount = amount.sub(devAmount);
-      ERC20._transfer(sender, devWallet, devAmount);
+      if(devAmount > 0) ERC20._transfer(sender, feeWallet, devAmount);
     }
     ERC20._transfer(sender, recipient, amount);
   }
