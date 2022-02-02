@@ -3,11 +3,8 @@ pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract Bamboo is ERC20Burnable, Ownable {
-
-  using SafeMath for uint256;
 
   string private constant SYMBOL = "BAM";
   string private constant NAME = "Bamboo";
@@ -75,12 +72,12 @@ contract Bamboo is ERC20Burnable, Ownable {
     require(lpPool != NULL_ADDRESS, "Bamboo::_transfer: pool unitialized");
     require(feeWallet != NULL_ADDRESS, "Bamboo::_transfer: devWallet unitialized");
     if(sender == lpPool) {
-      uint256 devAmount = amount.mul(feeBuy).div(PERCENT);
-      amount = amount.sub(devAmount);
+      uint256 devAmount = amount* feeBuy / PERCENT;
+      amount = amount - devAmount;
       if(devAmount > 0) ERC20._transfer(sender, feeWallet, devAmount);
     } else if (recipient == lpPool) {
-      uint256 devAmount = amount.mul(feeSell).div(PERCENT);
-      amount = amount.sub(devAmount);
+      uint256 devAmount = amount * feeSell / PERCENT;
+      amount = amount - devAmount;
       if(devAmount > 0) ERC20._transfer(sender, feeWallet, devAmount);
     }
     ERC20._transfer(sender, recipient, amount);
