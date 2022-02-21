@@ -68,8 +68,6 @@ contract Bamboo is ERC20Burnable, Ownable {
     emit SetPool(_msgSender(), _pool);
   }
 
-  // TODO
-
   function _transfer(
       address sender,
       address recipient,
