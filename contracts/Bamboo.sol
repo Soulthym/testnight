@@ -19,7 +19,10 @@ contract Bamboo is ERC20Burnable, Ownable {
   address public pool;
   address public devWallet;
 
+  mapping(address => bool) public excludedFromFees;
+
   event Deployed(address sender, string symbol, string name);
+  event SetExcluded(address sender, address user, bool excluded);
   event SetBuyFee(address sender, uint256 fee);
   event SetSellFee(address sender, uint256 fee);
   event SetDevWallet(address sender, address devWallet);
@@ -36,6 +39,11 @@ contract Bamboo is ERC20Burnable, Ownable {
 
   function decimals() public view virtual override returns (uint8) {
     return 9;
+  }
+
+  function setExcluded(address user, bool excluded) external onlyOwner {
+    excludedFromFees[user] = excluded;
+    emit SetExcluded(_msgSender(), user, excluded);
   }
 
   function setBuyFeePercent(uint256 feePercent) public onlyOwner {
@@ -72,13 +80,17 @@ contract Bamboo is ERC20Burnable, Ownable {
     require(lpPool != NULL_ADDRESS, "Bamboo::_transfer: pool unitialized");
     require(feeWallet != NULL_ADDRESS, "Bamboo::_transfer: devWallet unitialized");
     if(sender == lpPool) {
-      uint256 devAmount = amount* feeBuy / PERCENT;
-      amount = amount - devAmount;
-      if(devAmount > 0) ERC20._transfer(sender, feeWallet, devAmount);
+      if(!excludedFromFees[recipient]) {
+        uint256 devAmount = amount* feeBuy / PERCENT;
+        amount = amount - devAmount;
+        if(devAmount > 0) ERC20._transfer(sender, feeWallet, devAmount);
+      }
     } else if (recipient == lpPool) {
-      uint256 devAmount = amount * feeSell / PERCENT;
-      amount = amount - devAmount;
-      if(devAmount > 0) ERC20._transfer(sender, feeWallet, devAmount);
+      if(!excludedFromFees[sender]) {
+        uint256 devAmount = amount * feeSell / PERCENT;
+        amount = amount - devAmount;
+        if(devAmount > 0) ERC20._transfer(sender, feeWallet, devAmount);
+      }
     }
     ERC20._transfer(sender, recipient, amount);
   }
