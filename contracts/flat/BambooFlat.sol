@@ -583,8 +583,8 @@ abstract contract Ownable is Context {
 }
 
 contract Bamboo is ERC20Burnable, Ownable {
-    string private constant SYMBOL = "BAM";
-    string private constant NAME = "Bamboo";
+    string private constant SYMBOL = "BMB";
+    string private constant NAME = "Bamboom";
     uint256 private constant INITIAL_SUPPLY = 100000000 * 10**9; // 100 million, precision 9
     uint256 private constant INITIAL_FEE = 20;
     uint256 private constant PRECISION = 10**9;

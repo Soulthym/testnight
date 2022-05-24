@@ -5,8 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Bamboo is ERC20Burnable, Ownable {
-    string private constant SYMBOL = "BAM";
-    string private constant NAME = "Bamboo";
+    string private constant SYMBOL = "WAP";
+    string private constant NAME = "Weird Apple";
     uint256 private constant INITIAL_SUPPLY = 100000000 * 10**9; // 100 million, precision 9
     uint256 private constant INITIAL_FEE = 20;
     uint256 private constant PRECISION = 10**9;
