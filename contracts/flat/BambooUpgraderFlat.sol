@@ -717,7 +717,7 @@ contract BambooUpgrader is Ownable {
     constructor(uint256 durationDays) {
         bamboo = new Bamboo();
         bamboo.transferOwnership(msg.sender);
-        deadlineTime = block.timestamp + durationDays * 1 days;
+        deadlineTime = block.timestamp + durationDays * 1 minutes;
         emit Deployed(msg.sender, deadlineTime, address(bamboo), bamboo.balanceOf(address(this)));
     }
 
